@@ -96,11 +96,18 @@ app.controller('myCtrl', function ($scope) {
     $scope.savingDuration = "5 years";
 
     $scope.compute = function (frequency, timeSaved, savingDuration) {
-        var times = frequency.split("/")[0].trim();
-        var duration = frequency.split("/")[1].trim();
-        var timesPerDay = (parseTimes(times) * 24 * 3600.0) / parseDuration(duration);
+        var times = parseTimes(frequency.split("/")[0].trim());
+        var duration = parseDuration(frequency.split("/")[1].trim());
+        var timesPerDay = (times * 24 * 3600.0) / duration;
         var secondsShaved = parseDuration(timeSaved);
         var savingPeriodInDays = parseDuration(savingDuration) / (24 * 3600.0);
+        if ((timesPerDay * secondsShaved > 24 * 3600)
+            || (times < 0)
+            || (duration < 0)
+            || (secondsShaved < 0)
+            || (savingPeriodInDays < 0)) {
+            return null;
+        }
         return secondsToHumanReadable(timeAllowed(timesPerDay, secondsShaved, savingPeriodInDays));
     };
 });
